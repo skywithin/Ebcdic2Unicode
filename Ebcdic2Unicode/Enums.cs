@@ -51,15 +51,4 @@ namespace Ebcdic2Unicode
         /// <summary>XML Output</summary>
         XML
     }
-
-    /// <summary>Ebcdic data types</summary>
-    public enum EbcidicType
-    {
-        /// <summary>Standard Text Data Type</summary>
-        EBCDIC,
-        /// <summary>Compressed Binary Representation of a decimal</summary>
-        PACKED,
-        /// <summary>String representation of a datetime datatype</summary>
-        DATETIME
-    }
 }
