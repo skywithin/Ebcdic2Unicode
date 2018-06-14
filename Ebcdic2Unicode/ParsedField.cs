@@ -441,7 +441,7 @@ namespace Ebcdic2Unicode
             // "C" indicates it's a positive number and it must always come last in the second half of the last byte.
             // The last nibble may be either "C" (positive), "D" (negative) or "F" (unsigned). 
             // Just uncomment the following line and put a break point on it...
-            string hexString = ParserUtilities.ConvertBytesToStringBase16(packedBytes);
+            // string hexString = ParserUtilities.ConvertBytesToStringBase16(packedBytes);
 
             if (packedBytes.All(p => p == 0x00 || p == 0xFF))
             {
