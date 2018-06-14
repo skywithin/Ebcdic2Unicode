@@ -303,26 +303,5 @@ namespace Ebcdic2Unicode
             result = text.Substring(text.Length - length);
             return result;
         }
-
-        public static List<byte[]> Slice(this byte[] source, int length, int chunkSize)
-        {
-            int recordCount = (source.Length / length);
-            int chunkCount = 0;
-            do
-            {
-                chunkCount++;
-            }
-            while (chunkCount * chunkSize < recordCount);
-
-            List<byte[]> slices = new List<byte[]>();
-            for (int i = 1; i <= chunkCount; i++)
-            {
-                byte[] slice = new byte[length * chunkSize];
-                Array.Copy(source, i * length, slice, 0, length * chunkSize);
-                slices.Add(slice);
-            }
-            
-            return slices;
-        }
     }
 }

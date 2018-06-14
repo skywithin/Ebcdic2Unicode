@@ -40,4 +40,26 @@ namespace Ebcdic2Unicode
         /// <summary>ASCII text</summary>
         StringUnicode
     }
+
+    /// <summary>Write output provides instruction to the parsers of which format to output the parsed lines as</summary>
+    public enum WriteOutputType
+    {
+        /// <summary>Csv output</summary>
+        Csv,
+        /// <summary>Text file output</summary>
+        Txt,
+        /// <summary>XML Output</summary>
+        XML
+    }
+
+    /// <summary>Ebcdic data types</summary>
+    public enum EbcidicType
+    {
+        /// <summary>Standard Text Data Type</summary>
+        EBCDIC,
+        /// <summary>Compressed Binary Representation of a decimal</summary>
+        PACKED,
+        /// <summary>String representation of a datetime datatype</summary>
+        DATETIME
+    }
 }

@@ -11,13 +11,6 @@ namespace Ebcdic2Unicode
     {
         public ParsedLine[] ParsedLines { get; private set; }
 
-        public enum WriteOutputType
-        {
-            Csv,
-            Txt,
-            XML
-        }
-
         #region Constructors
 
         //Constractor 1
@@ -117,7 +110,7 @@ namespace Ebcdic2Unicode
         /// <param name="includeColumnNames">Include column names in file</param>
         /// <param name="addQuotes">Add text quotes as part of output</param>
         /// <returns>boolean on completion</returns>
-        public bool ParseAndWriteLines(LineTemplate lineTemplate, string sourceFilePath, WriteOutputType writeOutputType, string outputFilePath, bool includeColumnNames = true, bool addQuotes = true, int chunkSize = 100000)
+        public bool ParseAndWriteLines(LineTemplate lineTemplate, string sourceFilePath, string outputFilePath, WriteOutputType writeOutputType = WriteOutputType.Txt, bool includeColumnNames = true, bool addQuotes = true, int chunkSize = 100000)
         {
             try
             {
