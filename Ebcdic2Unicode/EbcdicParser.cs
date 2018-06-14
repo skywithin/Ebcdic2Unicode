@@ -1,6 +1,6 @@
 ﻿using Ebcdic2Unicode.Constants;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,12 @@ namespace Ebcdic2Unicode
     {
         public ParsedLine[] ParsedLines { get; private set; }
 
+        public enum WriteOutputType
+        {
+            Csv,
+            Txt,
+            XML
+        }
 
         #region Constructors
 
@@ -101,6 +107,69 @@ namespace Ebcdic2Unicode
         }
 
         /// <summary>
+        /// Parses multiple lines of binary data then writes it out to a specified destination in chunks.
+        /// </summary>
+        /// <param name="lineTemplate">Template</param>
+        /// <param name="sourceFilePath">Source file path</param>
+        /// <param name="writeOutputType">Output file type</param>
+        /// <param name="outputFilePath">Output file path</param>
+        /// <param name="chunkSize">Threshold in which to write output</param>
+        /// <param name="includeColumnNames">Include column names in file</param>
+        /// <param name="addQuotes">Add text quotes as part of output</param>
+        /// <returns>boolean on completion</returns>
+        public bool ParseAndWriteLines(LineTemplate lineTemplate, string sourceFilePath, WriteOutputType writeOutputType, string outputFilePath, bool includeColumnNames = true, bool addQuotes = true, int chunkSize = 100000)
+        {
+            try
+            {
+
+                using (FileStream reader = File.OpenRead(sourceFilePath))
+                {
+                    int fsBytes = (int)reader.Length;
+                    int chunk = (lineTemplate.LineSize * chunkSize);
+                    int loop = (int)(Math.Ceiling(((decimal)fsBytes / chunk)));
+                    bool append = false;
+                    int bytesRead = 0;
+
+                    for (int i = 1; i <= loop; i++)
+                    {
+                        byte[] b = new byte[0];
+
+                        Console.WriteLine($"Handling Batch {i} of {loop}");
+
+                        if(bytesRead + chunk > fsBytes)
+                        {
+                            chunk = fsBytes - bytesRead;
+                        }
+
+                        b = new byte[chunk];
+                        bytesRead += reader.Read(b, 0, chunk);
+
+                        this.ParsedLines = ParseAllLines(lineTemplate, b);
+
+                        switch (writeOutputType)
+                        {
+                            case WriteOutputType.Csv:
+                                SaveParsedLinesAsCsvFile(outputFilePath, includeColumnNames, addQuotes, append);
+                                break;
+                            case WriteOutputType.Txt:
+                                SaveParsedLinesAsTxtFile(outputFilePath, "|", includeColumnNames, addQuotes, "¬", append);
+                                break;
+                            case WriteOutputType.XML:
+                                throw new NotImplementedException("XML Exporting in batches has not yet been implemented");
+                        }
+                        append = true;
+                        Console.WriteLine($"--------------------------------------");
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// Parses single line of binary data.
         /// </summary>
         /// <param name="lineTemplate">Template</param>
@@ -148,14 +217,14 @@ namespace Ebcdic2Unicode
             return true;
         }
 
-        public bool SaveParsedLinesAsCsvFile(string outputFilePath, bool includeColumnNames = true, bool addQuotes = true)
+        public bool SaveParsedLinesAsCsvFile(string outputFilePath, bool includeColumnNames = true, bool addQuotes = true, bool append = false)
         {
-            return ParserUtilities.WriteParsedLineArrayToCsv(this.ParsedLines, outputFilePath, includeColumnNames, addQuotes);
+            return ParserUtilities.WriteParsedLineArrayToCsv(this.ParsedLines, outputFilePath, includeColumnNames, addQuotes, false);
         }
 
-        public bool SaveParsedLinesAsTxtFile(string outputFilePath, string delimiter = "\t", bool includeColumnNames = true, bool addQuotes = true)
+        public bool SaveParsedLinesAsTxtFile(string outputFilePath, string delimiter = "\t", bool includeColumnNames = true, bool addQuotes = true, string quoteCharacter = "\"", bool append = false)
         {
-            return ParserUtilities.WriteParsedLineArrayToTxt(this.ParsedLines, outputFilePath, delimiter, includeColumnNames, addQuotes);
+            return ParserUtilities.WriteParsedLineArrayToTxt(this.ParsedLines, outputFilePath, delimiter, includeColumnNames, addQuotes, quoteCharacter, append);
         }
 
         public bool SaveParsedLinesAsXmlFile(string outputFilePath)

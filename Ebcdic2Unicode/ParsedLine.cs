@@ -64,10 +64,10 @@ namespace Ebcdic2Unicode
             }
         }
 
-        public string[] GetFieldValues(bool addQuotes)
+        public string[] GetFieldValues(bool addQuotes, string quoteCharacter)
         {
             var output = ParsedFields.Values
-                .Select(f => string.Format("{1}{0}{1}", f.Text.Replace("\"", "").Trim(), addQuotes ? "\"" : string.Empty))
+                .Select(f => string.Format("{1}{0}{1}", f.Text.Replace(quoteCharacter, "").Trim(), addQuotes ? quoteCharacter : string.Empty))
                 .ToArray();
 
             return output;
@@ -82,12 +82,12 @@ namespace Ebcdic2Unicode
             return this.ParsedFields[fieldName].Text.Trim();
         }
 
-        public string GetField(string fieldName, bool surroundWithQuotes)
+        public string GetField(string fieldName, bool surroundWithQuotes, string quoteCharacter = "\"")
         {
-            return string.Format("\"{0}\"", this.GetField(fieldName));
+            return $"{quoteCharacter}{this.GetField(fieldName)}{quoteCharacter}";
         }
 
-        public string GetField(string fieldName, bool surroundWithQuotes, int paddedLength)
+        public string GetField(string fieldName, bool surroundWithQuotes, int paddedLength, string quoteCharacter = "\"")
         {
             if (paddedLength < 0)
             {
@@ -96,7 +96,7 @@ namespace Ebcdic2Unicode
 
             if (surroundWithQuotes)
             {
-                return string.Format("\"{0}\"", this.GetField(fieldName).PadRight(paddedLength));
+                return $"{quoteCharacter}{this.GetField(fieldName).PadRight(paddedLength)}{quoteCharacter}";
             }
             else
             {
@@ -125,7 +125,7 @@ namespace Ebcdic2Unicode
             return this.ToXml().ToString();
         }
 
-        public string ToCsvString(bool addQuotes = true, char separator = ',')
+        public string ToCsvString(bool addQuotes = true, char separator = ',', char quoteCharacter = '"')
         {
             var sb = new StringBuilder();
             bool addSeparator = false;
@@ -138,14 +138,14 @@ namespace Ebcdic2Unicode
                 }
                 if (addQuotes)
                 {
-                    sb.Append('"');
+                    sb.Append(quoteCharacter);
                 }
 
                 sb.Append(parsedField.Text.Trim());
 
                 if (addQuotes)
                 {
-                    sb.Append('"');
+                    sb.Append(quoteCharacter);
                 }
 
                 addSeparator = true;

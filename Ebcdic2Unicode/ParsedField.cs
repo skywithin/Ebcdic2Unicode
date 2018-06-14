@@ -432,7 +432,7 @@ namespace Ebcdic2Unicode
             double result = numericValue / Math.Pow(10, decimalPlaces);
             return result.ToString();
         }
-
+        
         private string Unpack(byte[] packedBytes, int decimalPlaces, out bool isParsedSuccessfully)
         {
             // There is a trick to see the value of the packed number in HEX (Base16). 
@@ -441,7 +441,7 @@ namespace Ebcdic2Unicode
             // "C" indicates it's a positive number and it must always come last in the second half of the last byte.
             // The last nibble may be either "C" (positive), "D" (negative) or "F" (unsigned). 
             // Just uncomment the following line and put a break point on it...
-            // string hexString = ParserUtilities.ConvertBytesToStringBase16(packedBytes);
+            string hexString = ParserUtilities.ConvertBytesToStringBase16(packedBytes);
 
             if (packedBytes.All(p => p == 0x00 || p == 0xFF))
             {
@@ -521,7 +521,7 @@ namespace Ebcdic2Unicode
             int b = packedBytes[packedBytes.Length - 1 - nibbleNo / 2];
             return (nibbleNo % 2 == 0) ? (b & 0x0000000F) : (b >> 4);
         }
-
+        
         public XElement ToXml(bool includeSrcBytesInHex = false)
         {
             XElement element = new XElement(Fields.XmlFields);
