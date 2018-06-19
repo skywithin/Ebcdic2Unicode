@@ -233,7 +233,7 @@ namespace Ebcdic2Unicode
                     File.Delete(outputFilePath);
                 }
 
-                using (TextWriter tw = new StreamWriter(outputFilePath, true))
+                using (TextWriter tw = new StreamWriter(outputFilePath, true, Encoding.Default))
                 {
                     if (includeColumnNames && lines.Length > 0 & !append)
                     {

@@ -67,7 +67,7 @@ namespace Ebcdic2Unicode
         public string[] GetFieldValues(bool addQuotes, string quoteCharacter)
         {
             var output = ParsedFields.Values
-                .Select(f => string.Format("{1}{0}{1}", f.Text.Replace(quoteCharacter, "").Trim(), addQuotes ? quoteCharacter : string.Empty))
+                .Select(f => string.Format("{1}{0}{1}", f.Text.Replace(quoteCharacter, "").Replace("\r","").Replace("\n"," ").Trim(), addQuotes ? quoteCharacter : string.Empty))
                 .ToArray();
 
             return output;

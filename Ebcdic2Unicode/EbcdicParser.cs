@@ -110,7 +110,7 @@ namespace Ebcdic2Unicode
         /// <param name="includeColumnNames">Include column names in file</param>
         /// <param name="addQuotes">Add text quotes as part of output</param>
         /// <returns>boolean on completion</returns>
-        public bool ParseAndWriteLines(LineTemplate lineTemplate, string sourceFilePath, string outputFilePath, WriteOutputType writeOutputType = WriteOutputType.Txt, bool includeColumnNames = true, bool addQuotes = true, int chunkSize = 100000)
+        public bool ParseAndWriteLines(LineTemplate lineTemplate, string sourceFilePath, string outputFilePath, WriteOutputType writeOutputType = WriteOutputType.Txt, bool includeColumnNames = true, bool addQuotes = true, int chunkSize = -1)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace Ebcdic2Unicode
                 using (FileStream reader = File.OpenRead(sourceFilePath))
                 {
                     int fsBytes = (int)reader.Length;
-                    int chunk = (lineTemplate.LineSize * chunkSize);
+                    int chunk = chunkSize == -1 ? fsBytes : (lineTemplate.LineSize * chunkSize);
                     int loop = (int)(Math.Ceiling(((decimal)fsBytes / chunk)));
                     bool append = false;
                     int bytesRead = 0;
