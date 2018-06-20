@@ -25,7 +25,7 @@ namespace EbcdicConverter.Concrete
             this.DatabaseName = DatabaseName;
         }
 
-        public string GetConnectionString() {
+        private string GetConnectionString() {
             if (string.IsNullOrWhiteSpace(this.ServerName))
                 throw new FormatException("Server name must be set!");
             if (string.IsNullOrWhiteSpace(this.DatabaseName))
@@ -34,7 +34,7 @@ namespace EbcdicConverter.Concrete
             return $"server={this.ServerName};database={this.DatabaseName};Trusted_Connection=True;";
         }
 
-        public KickstartLineTemplate RetrieveTemplate(string templateName)
+        public KickstartLineTemplate GetTemplate(string templateName)
         {
             KickstartLineTemplate result;
             using(SqlConnection cnxn = new SqlConnection(this.GetConnectionString()))
@@ -48,12 +48,17 @@ namespace EbcdicConverter.Concrete
                                          WHERE LayoutName='{templateName}'";
                     using(SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        result = reader.Enumerate().Select(r => new KickstartLineTemplate((int)r["FileWidth"], r["LayoutName"].ToString())
+                        try
                         {
-                            LayoutID = (int)r["LayoutID"],
-                            ChunkSize = (int)r["ChunkSize"]
-                        }).First();
-
+                            result = reader.Enumerate().Select(r => new KickstartLineTemplate((int)r["FileWidth"], r["LayoutName"].ToString())
+                            {
+                                LayoutID = (int)r["LayoutID"],
+                                ChunkSize = (int)r["ChunkSize"]
+                            }).First();
+                        } catch (InvalidOperationException ex)
+                        {
+                            throw new InvalidOperationException($"The layout format'{templateName} does not exist!", ex);
+                        }
                     }
                     cmd.CommandText = $@"SELECT FieldName,dt.ACLDataTypeName,StartPosition,FieldWidth,DecimalPlaces
                                         FROM ACLLayoutDetail ld

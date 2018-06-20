@@ -13,10 +13,10 @@ namespace Ebcdic2UnicodeApp.Concrete
         [Option('l', "Layout", Required = true, HelpText = "Please Enter The Layout Name")]
         public string LayoutName { get; set; }
 
-        [Option('f', "SourcePath", Required = true, HelpText = "Please Enter The Layout Name")]
+        [Option('f', "SourceFile", Required = true, HelpText = "Please Enter The Source File Path")]
         public string SourceFile { get; set; }
 
-        [Option('o', "OutputPath", Required = true, HelpText = "Please Enter The Layout Name")]
+        [Option('o', "OutputPath", Required = true, HelpText = "Please Enter The Output File Path")]
         public string DestinationFile { get; set; }
 
         [Option('s', "Server", Default = "SQL04", Required = false, HelpText = "Please Enter The Server Name")]
@@ -24,5 +24,6 @@ namespace Ebcdic2UnicodeApp.Concrete
 
         [Option('d', "Database", Default = "KickStartDb_AppDev", Required = false, HelpText = "Please Enter The Kickstart Database Name")]
         public string DatabaseName { get; set; }
+
     }
 }

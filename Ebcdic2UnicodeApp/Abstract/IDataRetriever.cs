@@ -10,6 +10,6 @@ namespace EbcdicConverter.Abstract
 {
     public interface IDataRetriever<T> where T : LineTemplate
     {
-        T RetrieveTemplate(string templateName);
+        T GetTemplate(string templateName);
     }
 }
