@@ -22,7 +22,7 @@ namespace Ebcdic2UnicodeApp.Concrete
         [Option('s', "Server", Default = "SQL04", Required = false, HelpText = "Please Enter The Server Name")]
         public string ServerName { get; set; }
 
-        [Option('d', "Database", Default = "KickStartDb_AppDev", Required = false, HelpText = "Please Enter The Kickstart Database Name")]
+        [Option('d', "Database", Default = "KickStartDb", Required = false, HelpText = "Please Enter The Kickstart Database Name")]
         public string DatabaseName { get; set; }
 
     }
