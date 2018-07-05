@@ -16,11 +16,28 @@ namespace Ebcdic2UnicodeApp
     {
         static void Main(string[] args)
         {
-            CommandLine.Parser.Default.ParseArguments<Options>(args)
+            /*CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .MapResult(
                     options => RunCodeAndReturnExitCode(options),
                     _ => 1
                 );
+            */
+
+            //Create parser
+            MultiFileTypeParser parser = new MultiFileTypeParser();
+            IDataRetriever<KickstartLineTemplate> retriever = new KickstartDataRetriever("SQL04", "KickStartDb");
+
+            //Get Defs
+            KickstartLineTemplate template = retriever.GetTemplate("EIWMTINVCE");
+            Dictionary<string,KickstartLineTemplate> children = new Dictionary<string, KickstartLineTemplate>();
+            template.ChildLayoutNames.ForEach(r =>
+            {
+                KickstartLineTemplate t = retriever.GetTemplate(r);
+                children.Add(t.LayoutName, t);
+            });
+            parser.Parse(@"W:\ASDA\ETL$\EDI\Decompressed\EIWMTINVCE01032018.dat", template, children);
+
+
         }
         static int RunCodeAndReturnExitCode(Options options)
         {

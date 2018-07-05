@@ -14,7 +14,7 @@ namespace Ebcdic2Unicode
 
         public string LineTemplateName { get; private set; }
 
-        public int LineSize { get; private set; }
+        public int LineSize { get; protected set; }
 
         public int FieldsCount
         {

@@ -43,7 +43,7 @@ namespace EbcdicConverter.Concrete
                 using(SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cnxn;
-                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize
+                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize, Offset, VariableWidth
                                          FROM ACLLayout al
                                          WHERE LayoutName='{templateName}'";
                     using(SqlDataReader reader = cmd.ExecuteReader())
@@ -53,13 +53,22 @@ namespace EbcdicConverter.Concrete
                             result = reader.Enumerate().Select(r => new KickstartLineTemplate((int)r["FileWidth"], r["LayoutName"].ToString())
                             {
                                 LayoutID = (int)r["LayoutID"],
-                                ChunkSize = (int)r["ChunkSize"]
+                                ChunkSize = (int)r["ChunkSize"],
+                                Offset = (int)r["Offset"],
+                                VariableWidth = (bool)r["VariableWidth"]
                             }).First();
                         } catch (InvalidOperationException ex)
                         {
                             throw new InvalidOperationException($"The layout format'{templateName} does not exist!", ex);
                         }
                     }
+
+                    cmd.CommandText = $@"SELECT LayoutName FROM ACLLayout WHERE ParentLayoutID = {result.LayoutID}";
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        result.ChildLayoutNames = reader.Enumerate().Select(r => r["LayoutName"].ToString()).ToList();
+                    }
+
                     cmd.CommandText = $@"SELECT FieldName,dt.ACLDataTypeName,StartPosition,FieldWidth,DecimalPlaces
                                         FROM ACLLayoutDetail ld
                                         INNER JOIN ACLDataType dt on dt.ACLDataTypeID = ld.ACLDataTypeID
