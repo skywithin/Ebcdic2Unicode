@@ -17,6 +17,10 @@ namespace Ebcdic2UnicodeApp.Concrete
         }    
         public void Parse(string filePath, KickstartLineTemplate parentLayout, Dictionary<string, KickstartLineTemplate> definitionMap)
         {
+            //Get File Information
+            FileInfo info = new FileInfo(filePath);
+            string fileName = info.Name.Replace(info.Extension, "");
+
             //Create a collection of parsers
             EbcdicParser parentParser = new EbcdicParser();
             Dictionary<string, EbcdicParser> parserCollection = new Dictionary<string, EbcdicParser>();
@@ -25,6 +29,7 @@ namespace Ebcdic2UnicodeApp.Concrete
                 parserCollection.Add(kv.Key, new EbcdicParser());
             }
 
+            //Open File and Action
             using (FileStream reader = File.OpenRead(filePath))
             {
                 int fsBytes = (int)reader.Length;
@@ -56,15 +61,12 @@ namespace Ebcdic2UnicodeApp.Concrete
                         ParsedLine pl = parser.ParseAndAddSingleLine(template, child);
                     }
                 }
+
+                //Write out files
                 Parallel.ForEach<KeyValuePair<string, EbcdicParser>>(parserCollection, kv =>
                 {
-                    kv.Value.SaveParsedLinesAsTxtFile($"{parentLayout.LayoutName}_{kv.Key}.txt", "|", true, true, "¬", true);
+                    kv.Value.SaveParsedLinesAsTxtFile($"{fileName}_{kv.Key}.txt", "|", true, true, "¬", false);
                 });
-
-                //foreach (KeyValuePair<string, EbcdicParser> kv in parserCollection)
-                //{
-                //    kv.Value.SaveParsedLinesAsTxtFile($"{parentLayout.LayoutName}_{kv.Key}.txt", "|", true, true, "¬", true);
-                //}
             }
         }
     }
