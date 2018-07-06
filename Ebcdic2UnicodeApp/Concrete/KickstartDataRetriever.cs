@@ -43,8 +43,13 @@ namespace EbcdicConverter.Concrete
                 using(SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cnxn;
-                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize, Offset, VariableWidth
+                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize, Offset, VariableWidth, CASE WHEN c.ChildCount > 0 THEN 1 ELSE 0 END AS MultiFileTypeFile
                                          FROM ACLLayout al
+                                         OUTER APPLY(
+                                            SELECT COUNT(1) AS ChildCount
+                                            FROM ACLLayout al2
+                                            WHERE al2.ParentLayoutID = al.LayoutID
+                                         ) c
                                          WHERE LayoutName='{templateName}'";
                     using(SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -55,7 +60,8 @@ namespace EbcdicConverter.Concrete
                                 LayoutID = (int)r["LayoutID"],
                                 ChunkSize = (int)r["ChunkSize"],
                                 Offset = (int)r["Offset"],
-                                VariableWidth = (bool)r["VariableWidth"]
+                                VariableWidth = (bool)r["VariableWidth"],
+                                MultiFileTypeFile = (bool)r["MultiFileTypeFile"]
                             }).First();
                         } catch (InvalidOperationException ex)
                         {

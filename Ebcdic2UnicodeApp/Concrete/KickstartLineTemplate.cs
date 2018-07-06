@@ -17,9 +17,10 @@ namespace Ebcdic2UnicodeApp.Concrete
         public int LayoutID { get; set; }
         public string LayoutName { get; private set; }
         public int ChunkSize { get; set; }
-        public List<string> ChildLayoutNames { get; set; }
         public int Offset { get; set; }
         public bool VariableWidth { get; set; }
+        public bool MultiFileTypeFile { get; set; }
+        public List<string> ChildLayoutNames { get; set; }
 
         public void ChangeLineSize(int newLineSize)
         {
