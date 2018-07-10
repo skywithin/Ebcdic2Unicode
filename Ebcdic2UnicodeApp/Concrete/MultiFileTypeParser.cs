@@ -19,7 +19,7 @@ namespace Ebcdic2UnicodeApp.Concrete
         {
             //Get File Information
             FileInfo info = new FileInfo(filePath);
-            string fileName = info.Name.Replace(info.Extension, "");
+            string fileName = info.FullName.Replace(info.Extension, "");
 
             //Create a collection of parsers
             EbcdicParser parentParser = new EbcdicParser();
@@ -61,7 +61,6 @@ namespace Ebcdic2UnicodeApp.Concrete
                         ParsedLine pl = parser.ParseAndAddSingleLine(template, child);
                     }
                 }
-
                 //Write out files
                 Parallel.ForEach<KeyValuePair<string, EbcdicParser>>(parserCollection, kv =>
                 {

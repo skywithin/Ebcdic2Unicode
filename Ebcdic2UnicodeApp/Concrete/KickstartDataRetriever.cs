@@ -43,7 +43,7 @@ namespace EbcdicConverter.Concrete
                 using(SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cnxn;
-                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize, Offset, VariableWidth, CASE WHEN c.ChildCount > 0 THEN 1 ELSE 0 END AS MultiFileTypeFile
+                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize, Offset, VariableWidth, CAST(CASE WHEN COALESCE(c.ChildCount,0) > 0 THEN 1 ELSE 0 END AS BIT) AS MultiFileTypeFile
                                          FROM ACLLayout al
                                          OUTER APPLY(
                                             SELECT COUNT(1) AS ChildCount
