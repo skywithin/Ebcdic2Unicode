@@ -24,10 +24,24 @@ namespace Ebcdic2UnicodeApp
         }
         static int RunCodeAndReturnExitCode(Options options)
         {
-            BulkParser parser = new BulkParser();
             IDataRetriever<KickstartLineTemplate> retriever = new KickstartDataRetriever(options.ServerName, options.DatabaseName);
             KickstartLineTemplate layout = retriever.GetTemplate(options.LayoutName);
-            parser.ParseAndWriteLines(layout, options.SourceFile, options.DestinationFile, chunkSize: layout.ChunkSize);
+
+            if (layout.MultiFileTypeFile)
+            {
+                MultiFileTypeParser parser = new MultiFileTypeParser();
+                Dictionary<string, KickstartLineTemplate> children = new Dictionary<string, KickstartLineTemplate>();
+                layout.ChildLayoutNames.ForEach(r =>
+                {
+                    KickstartLineTemplate t = retriever.GetTemplate(r);
+                    children.Add(t.LayoutName, t);
+                });
+                parser.Parse(options.SourceFile, layout, children);
+            } else
+            {
+                BulkParser parser = new BulkParser();
+                parser.ParseAndWriteLines(layout, options.SourceFile, options.DestinationFile, chunkSize: layout.ChunkSize);
+            }
             return 0;
         }
     }

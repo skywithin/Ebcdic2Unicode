@@ -23,7 +23,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>http://localhost/EbcdicConverter/</UpdateUrl>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>9</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="Abstract\IDataRetriever.cs" />
     <Compile Include="Concrete\BulkParser.cs" />
+    <Compile Include="Concrete\MultiFileTypeParser.cs" />
     <Compile Include="Concrete\Options.cs" />
     <Compile Include="Concrete\FieldTemplateMapper.cs" />
     <Compile Include="Concrete\KickstartDataRetriever.cs" />

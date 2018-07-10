@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ebcdic2Unicode.UnitTests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EbcdicConverter", "Ebcdic2UnicodeApp\EbcdicConverter.csproj", "{9FB95458-343F-4CFD-A6B9-20127332E261}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EbcdicConverterTests", "EbcdicConverterTests\EbcdicConverterTests.csproj", "{867EF382-C3A9-4B26-91B0-E852DA01D245}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +26,6 @@ Global
 		{9FB95458-343F-4CFD-A6B9-20127332E261}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FB95458-343F-4CFD-A6B9-20127332E261}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FB95458-343F-4CFD-A6B9-20127332E261}.Release|Any CPU.Build.0 = Release|Any CPU
-		{867EF382-C3A9-4B26-91B0-E852DA01D245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{867EF382-C3A9-4B26-91B0-E852DA01D245}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{867EF382-C3A9-4B26-91B0-E852DA01D245}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
