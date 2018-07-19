@@ -113,13 +113,27 @@ namespace Ebcdic2Unicode
             return parsedLine;
         }
 
-        public ParsedLine ParseAndAddSingleLine(LineTemplate lineTemplate, byte[] lineBytes)
+        public ParsedLine ParseAndAddSingleLine(LineTemplate lineTemplate, byte[] lineBytes, int flushThreshhold)
         {
             bool isSingleLine = true;
             this.ValidateInputParameters(lineTemplate, lineBytes, isSingleLine);
             ParsedLine parsedLine = new ParsedLine(lineTemplate, lineBytes);
             ParsedLine[] parsed = this.ParsedLines;
-            Array.Resize(ref parsed, (parsed == null ? 0 : parsed.Length) + 1);
+            if (parsed == null)
+            {
+                parsed = new ParsedLine[1];
+            }
+            else
+            {
+                if (parsed.Length == flushThreshhold)
+                {
+                    Array.Resize(ref parsed, 1);
+                }
+                else
+                {
+                    Array.Resize(ref parsed, (parsed == null ? 0 : parsed.Length) + 1);
+                }
+            }
             parsed[parsed.Length -1] = parsedLine;
             this.ParsedLines = parsed;
             return parsedLine;
