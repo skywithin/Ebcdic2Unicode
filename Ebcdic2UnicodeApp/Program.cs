@@ -30,11 +30,15 @@ namespace Ebcdic2UnicodeApp
             if (layout.MultiFileTypeFile)
             {
                 MultiFileTypeParser parser = new MultiFileTypeParser();
-                Dictionary<string, KickstartLineTemplate> children = new Dictionary<string, KickstartLineTemplate>();
+                List<MultiFileTypeMeta> children = new List<MultiFileTypeMeta>();
                 layout.ChildLayoutNames.ForEach(r =>
                 {
-                    KickstartLineTemplate t = retriever.GetTemplate(r);
-                    children.Add(t.LayoutName, t);
+                    MultiFileTypeMeta m = new MultiFileTypeMeta()
+                    {
+                        DefinitionName = r,
+                        DefinitionTemplate = retriever.GetTemplate(r)
+                    };
+                    children.Add(m);
                 });
                 parser.Parse(options.SourceFile, layout, children);
             } else
