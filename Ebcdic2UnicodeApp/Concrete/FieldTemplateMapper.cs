@@ -13,7 +13,7 @@ namespace Ebcdic2UnicodeApp.Concrete
         static FieldType GetFieldType(string EbcdicType)
         {
             FieldType result;
-            string[] ebcdicTypes = new string[] { "EBCDIC", "DATETIME", "PACKED", "BINARY" };
+            string[] ebcdicTypes = new string[] { "EBCDIC", "DATETIME", "PACKED", "BINARY", "NUMERIC" };
             string dataType = EbcdicType.ToUpper();
 
             if (!ebcdicTypes.Contains(dataType))
@@ -32,6 +32,9 @@ namespace Ebcdic2UnicodeApp.Concrete
                     break;
                 case "BINARY":
                     result = FieldType.BinaryNum;
+                    break;
+                case "NUMERIC":
+                    result = FieldType.NumericString;
                     break;
                 default:
                     result = FieldType.String;
