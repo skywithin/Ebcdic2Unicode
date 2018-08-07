@@ -55,7 +55,7 @@ namespace Ebcdic2UnicodeApp.Concrete
                     bytesRead += reader.Read(child, 0, meta.DefinitionTemplate.LineSize);
                     
                     if (meta.DefinitionTemplate.FieldsCount > 0)
-                    {
+                    {       
                         ParsedLine pl = meta.Parser.ParseAndAddSingleLine(meta.DefinitionTemplate, child, meta.DefinitionTemplate.ChunkSize);
                         if (meta.Parser.ParsedLines.Length >= meta.DefinitionTemplate.ChunkSize)
                         {
@@ -64,6 +64,7 @@ namespace Ebcdic2UnicodeApp.Concrete
                         }
                     }
                 }
+                MetaData.ForEach(m => m.Parser.SaveParsedLinesAsTxtFile($"{fileName}_{m.DefinitionName}.txt", "|", true, true, "¬", m.AppendToFile));
             }
         }
     }
