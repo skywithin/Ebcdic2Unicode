@@ -39,12 +39,12 @@ namespace Ebcdic2UnicodeApp.Concrete
                     ParsedLine p = parentParser.ParseSingleLine(parentLayout, bHeader);
 
                     string recordType = p.ParsedFields.Where(f => f.Key == "RecordType").Select(f => f.Value.Text).First();
-                    int recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
-
+                    
                     MultiFileTypeMeta meta = MetaData.Where(md => md.DefinitionName == recordType).First();
 
                     if (meta.DefinitionTemplate.VariableWidth)
                     {
+                        int recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
                         meta.DefinitionTemplate.ChangeLineSize(recordLength + meta.DefinitionTemplate.Offset);
                         child = new byte[recordLength + meta.DefinitionTemplate.Offset];
                     } else
