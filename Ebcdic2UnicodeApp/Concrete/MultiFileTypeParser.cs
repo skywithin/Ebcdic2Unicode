@@ -42,27 +42,28 @@ namespace Ebcdic2UnicodeApp.Concrete
                     
                     MultiFileTypeMeta meta = MetaData.Where(md => md.DefinitionName == recordType).First();
 
-                    if (meta.DefinitionTemplate.VariableWidth)
-                    {
-                        int recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
-                        meta.DefinitionTemplate.ChangeLineSize(recordLength + meta.DefinitionTemplate.Offset);
-                        child = new byte[recordLength + meta.DefinitionTemplate.Offset];
-                    } else
-                    {
-                        child = new byte[meta.DefinitionTemplate.LineSize];
-                    }
+                    child = new byte[meta.DefinitionTemplate.LineSize];
 
-                    bytesRead += reader.Read(child, 0, meta.DefinitionTemplate.LineSize);
-                    
-                    if (meta.DefinitionTemplate.FieldsCount > 0)
-                    {       
-                        ParsedLine pl = meta.Parser.ParseAndAddSingleLine(meta.DefinitionTemplate, child, meta.DefinitionTemplate.ChunkSize);
-                        if (meta.Parser.ParsedLines.Length >= meta.DefinitionTemplate.ChunkSize)
+                    if (meta.DefinitionTemplate.Import == true)
+                    {
+                        if (meta.DefinitionTemplate.VariableWidth)
                         {
-                            meta.Parser.SaveParsedLinesAsTxtFile($"{fileName}_{recordType}.txt", "|", true, true, "¬", meta.AppendToFile);
-                            meta.AppendToFile = true;
+                            int recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
+                            meta.DefinitionTemplate.ChangeLineSize(recordLength + meta.DefinitionTemplate.Offset);
+                            child = new byte[recordLength + meta.DefinitionTemplate.Offset];
+                        }
+
+                        if (meta.DefinitionTemplate.FieldsCount > 0)
+                        {
+                            ParsedLine pl = meta.Parser.ParseAndAddSingleLine(meta.DefinitionTemplate, child, meta.DefinitionTemplate.ChunkSize);
+                            if (meta.Parser.ParsedLines.Length >= meta.DefinitionTemplate.ChunkSize)
+                            {
+                                meta.Parser.SaveParsedLinesAsTxtFile($"{fileName}_{recordType}.txt", "|", true, true, "¬", meta.AppendToFile);
+                                meta.AppendToFile = true;
+                            }
                         }
                     }
+                    bytesRead += reader.Read(child, 0, meta.DefinitionTemplate.LineSize);
                 }
                 MetaData.ForEach(m => m.Parser.SaveParsedLinesAsTxtFile($"{fileName}_{m.DefinitionName}.txt", "|", true, true, "¬", m.AppendToFile));
             }

@@ -43,7 +43,7 @@ namespace EbcdicConverter.Concrete
                 using(SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cnxn;
-                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize, Offset, VariableWidth, CAST(CASE WHEN COALESCE(c.ChildCount,0) > 0 THEN 1 ELSE 0 END AS BIT) AS MultiFileTypeFile
+                    cmd.CommandText = $@"SELECT LayoutID, LayoutName, FileWidth, ChunkSize, Offset, VariableWidth, CAST(CASE WHEN COALESCE(c.ChildCount,0) > 0 THEN 1 ELSE 0 END AS BIT) AS MultiFileTypeFile, Import
                                          FROM ACLLayout al
                                          OUTER APPLY(
                                             SELECT COUNT(1) AS ChildCount
@@ -61,7 +61,8 @@ namespace EbcdicConverter.Concrete
                                 ChunkSize = (int)r["ChunkSize"],
                                 Offset = (int)r["Offset"],
                                 VariableWidth = (bool)r["VariableWidth"],
-                                MultiFileTypeFile = (bool)r["MultiFileTypeFile"]
+                                MultiFileTypeFile = (bool)r["MultiFileTypeFile"],
+                                Import = (bool)r["Import"]
                             }).First();
                         } catch (InvalidOperationException ex)
                         {

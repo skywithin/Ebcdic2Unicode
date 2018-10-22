@@ -20,6 +20,7 @@ namespace Ebcdic2UnicodeApp.Concrete
         public int Offset { get; set; }
         public bool VariableWidth { get; set; }
         public bool MultiFileTypeFile { get; set; }
+        public bool Import { get; set; }
         public List<string> ChildLayoutNames { get; set; }
 
         public void ChangeLineSize(int newLineSize)
