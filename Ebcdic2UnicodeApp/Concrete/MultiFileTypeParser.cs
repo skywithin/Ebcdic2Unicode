@@ -33,8 +33,8 @@ namespace Ebcdic2UnicodeApp.Concrete
                 int bytesRead = 0;
                 byte[] bHeader = new byte[parentLayout.LineSize];
                 byte[] child;
-                int recordLength = 0;
-                string recordType = "";
+                int recordLength;
+                string recordType;
 
                 while (bytesRead < fsBytes)
                 {
