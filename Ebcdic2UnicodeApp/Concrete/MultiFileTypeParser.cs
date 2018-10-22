@@ -42,17 +42,19 @@ namespace Ebcdic2UnicodeApp.Concrete
                     
                     MultiFileTypeMeta meta = MetaData.Where(md => md.DefinitionName == recordType).First();
 
-                    child = new byte[meta.DefinitionTemplate.LineSize];
+                    if (meta.DefinitionTemplate.VariableWidth)
+                    {
+                        int recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
+                        meta.DefinitionTemplate.ChangeLineSize(recordLength + meta.DefinitionTemplate.Offset);
+                        child = new byte[recordLength + meta.DefinitionTemplate.Offset];
+                    }
+                    else
+                    {
+                        child = new byte[meta.DefinitionTemplate.LineSize];
+                    }
 
                     if (meta.DefinitionTemplate.Import == true)
                     {
-                        if (meta.DefinitionTemplate.VariableWidth)
-                        {
-                            int recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
-                            meta.DefinitionTemplate.ChangeLineSize(recordLength + meta.DefinitionTemplate.Offset);
-                            child = new byte[recordLength + meta.DefinitionTemplate.Offset];
-                        }
-
                         if (meta.DefinitionTemplate.FieldsCount > 0)
                         {
                             ParsedLine pl = meta.Parser.ParseAndAddSingleLine(meta.DefinitionTemplate, child, meta.DefinitionTemplate.ChunkSize);
