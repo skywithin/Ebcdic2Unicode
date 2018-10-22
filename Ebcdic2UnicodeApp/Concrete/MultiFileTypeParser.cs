@@ -27,24 +27,28 @@ namespace Ebcdic2UnicodeApp.Concrete
             //Open File and Action
             using (FileStream reader = File.OpenRead(filePath))
             {
+                ParsedLine p;
+                MultiFileTypeMeta meta;
                 int fsBytes = (int)reader.Length;
                 int bytesRead = 0;
                 byte[] bHeader = new byte[parentLayout.LineSize];
                 byte[] child;
+                int recordLength = 0;
+                string recordType = "";
 
                 while (bytesRead < fsBytes)
                 {
                     reader.Read(bHeader, 0,parentLayout.LineSize);
                     reader.Position = reader.Position - parentLayout.LineSize;
-                    ParsedLine p = parentParser.ParseSingleLine(parentLayout, bHeader);
+                    p = parentParser.ParseSingleLine(parentLayout, bHeader);
 
-                    string recordType = p.ParsedFields.Where(f => f.Key == "RecordType").Select(f => f.Value.Text).First();
+                    recordType = p.ParsedFields.Where(f => f.Key == "RecordType").Select(f => f.Value.Text).First();
                     
-                    MultiFileTypeMeta meta = MetaData.Where(md => md.DefinitionName == recordType).First();
+                    meta = MetaData.Where(md => md.DefinitionName == recordType).First();
 
                     if (meta.DefinitionTemplate.VariableWidth)
                     {
-                        int recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
+                        recordLength = int.Parse(p.ParsedFields.Where(f => f.Key == "RecordLength").Select(f => f.Value.Text).First());
                         meta.DefinitionTemplate.ChangeLineSize(recordLength + meta.DefinitionTemplate.Offset);
                         child = new byte[recordLength + meta.DefinitionTemplate.Offset];
                     }
@@ -57,7 +61,7 @@ namespace Ebcdic2UnicodeApp.Concrete
                     {
                         if (meta.DefinitionTemplate.FieldsCount > 0)
                         {
-                            ParsedLine pl = meta.Parser.ParseAndAddSingleLine(meta.DefinitionTemplate, child, meta.DefinitionTemplate.ChunkSize);
+                            meta.Parser.ParseAndAddSingleLine(meta.DefinitionTemplate, child, meta.DefinitionTemplate.ChunkSize);
                             if (meta.Parser.ParsedLines.Length >= meta.DefinitionTemplate.ChunkSize)
                             {
                                 meta.Parser.SaveParsedLinesAsTxtFile($"{fileName}_{recordType}.txt", "|", true, true, "¬", meta.AppendToFile);
