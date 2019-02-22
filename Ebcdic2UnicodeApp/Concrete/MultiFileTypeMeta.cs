@@ -14,7 +14,7 @@ namespace Ebcdic2UnicodeApp.Concrete
             this.Parser = new EbcdicParser();
             this.AppendToFile = false;
         }
-        public string DefinitionName { get; set; }
+        public int DefinitionID { get; set; }
         public KickstartLineTemplate DefinitionTemplate { get; set; }
         public EbcdicParser Parser { get; private set; }
         public bool AppendToFile { get; set; }

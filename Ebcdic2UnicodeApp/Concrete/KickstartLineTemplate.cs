@@ -21,7 +21,7 @@ namespace Ebcdic2UnicodeApp.Concrete
         public bool VariableWidth { get; set; }
         public bool MultiFileTypeFile { get; set; }
         public bool Import { get; set; }
-        public List<string> ChildLayoutNames { get; set; }
+        public List<int> ChildLayoutIDs { get; set; }
 
         public void ChangeLineSize(int newLineSize)
         {

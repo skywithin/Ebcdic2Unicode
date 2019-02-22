@@ -25,18 +25,20 @@ namespace Ebcdic2UnicodeApp
         static int RunCodeAndReturnExitCode(Options options)
         {
             IDataRetriever<KickstartLineTemplate> retriever = new KickstartDataRetriever(options.ServerName, options.DatabaseName);
-            KickstartLineTemplate layout = retriever.GetTemplate(options.LayoutName);
+            int layoutID = retriever.GetParentLayoutIDByName(options.LayoutName);
+            KickstartLineTemplate layout = retriever.GetTemplateByID(layoutID);
 
             if (layout.MultiFileTypeFile)
             {
                 MultiFileTypeParser parser = new MultiFileTypeParser();
                 List<MultiFileTypeMeta> children = new List<MultiFileTypeMeta>();
-                layout.ChildLayoutNames.ForEach(r =>
+                layout.ChildLayoutIDs.ForEach(r =>
                 {
+
                     MultiFileTypeMeta m = new MultiFileTypeMeta()
                     {
-                        DefinitionName = r,
-                        DefinitionTemplate = retriever.GetTemplate(r)
+                        DefinitionID = r,
+                        DefinitionTemplate = retriever.GetTemplateByID(r)
                     };
                     children.Add(m);
                 });

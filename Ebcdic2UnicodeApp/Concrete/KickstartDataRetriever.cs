@@ -34,7 +34,26 @@ namespace EbcdicConverter.Concrete
             return $"server={this.ServerName};database={this.DatabaseName};Trusted_Connection=True;";
         }
 
-        public KickstartLineTemplate GetTemplate(string templateName)
+        public int GetParentLayoutIDByName(string layoutName)
+        {
+            int result;
+            using (SqlConnection cnxn = new SqlConnection(this.GetConnectionString()))
+            {
+                cnxn.Open();
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = cnxn;
+                    cmd.CommandText = $@"SELECT LayoutID
+                                         FROM ACLLayout al
+                                         WHERE al.LayoutName='{layoutName}'
+                                         AND al.ParentLayoutID IS NULL";
+                    result = int.Parse(cmd.ExecuteScalar().ToString());
+                }
+            }
+            return result;
+        }
+
+        public KickstartLineTemplate GetTemplateByID(int layoutID)
         {
             KickstartLineTemplate result;
             using(SqlConnection cnxn = new SqlConnection(this.GetConnectionString()))
@@ -50,7 +69,7 @@ namespace EbcdicConverter.Concrete
                                             FROM ACLLayout al2
                                             WHERE al2.ParentLayoutID = al.LayoutID
                                          ) c
-                                         WHERE LayoutName='{templateName}'";
+                                         WHERE al.LayoutID='{layoutID}'";
                     using(SqlDataReader reader = cmd.ExecuteReader())
                     {
                         try
@@ -66,21 +85,21 @@ namespace EbcdicConverter.Concrete
                             }).First();
                         } catch (InvalidOperationException ex)
                         {
-                            throw new InvalidOperationException($"The layout format'{templateName} does not exist!", ex);
+                            throw new InvalidOperationException($"The Layout with ID:'{layoutID} does not exist!", ex);
                         }
                     }
 
-                    cmd.CommandText = $@"SELECT LayoutName FROM ACLLayout WHERE ParentLayoutID = {result.LayoutID}";
+                    cmd.CommandText = $@"SELECT LayoutID FROM ACLLayout WHERE ParentLayoutID = {result.LayoutID}";
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        result.ChildLayoutNames = reader.Enumerate().Select(r => r["LayoutName"].ToString()).ToList();
+                        result.ChildLayoutIDs = reader.Enumerate().Select(r => int.Parse(r["LayoutID"].ToString())).ToList();
                     }
 
                     cmd.CommandText = $@"SELECT FieldName,dt.ACLDataTypeName,StartPosition,FieldWidth,DecimalPlaces
                                         FROM ACLLayoutDetail ld
                                         INNER JOIN ACLDataType dt on dt.ACLDataTypeID = ld.ACLDataTypeID
                                         INNER JOIN ACLLayout al on al.LayoutID = ld.LayoutID
-                                        WHERE LayoutName='{templateName}'";
+                                        WHERE al.LayoutID='{layoutID}'";
                     using(SqlDataReader reader = cmd.ExecuteReader())
                     {
                         result.AddFieldTemplates(reader.Enumerate().Select(r => FieldTemplateMapper.GetFieldTemplate(r)).ToList());

@@ -32,13 +32,13 @@ namespace Ebcdic2UnicodeApp.Concrete
 
                 using (FileStream reader = File.OpenRead(sourceFilePath))
                 {
-                    int fsBytes = (int)reader.Length;
-                    int chunk = chunkSize == -1 ? fsBytes : (lineTemplate.LineSize * chunkSize);
+                    long fsBytes = reader.Length;
+                    int chunk = (int)(chunkSize == -1 ? fsBytes : (lineTemplate.LineSize * chunkSize));
                     int loop = (int)(Math.Ceiling(((decimal)fsBytes / chunk)));
                     bool append = false;
-                    int bytesRead = 0;
+                    long bytesRead = 0;
 
-                    for (int i = 1; i <= loop; i++)
+                    for (long i = 1; i <= loop; i++)
                     {
                         byte[] b = new byte[0];
 
@@ -46,7 +46,7 @@ namespace Ebcdic2UnicodeApp.Concrete
 
                         if (bytesRead + chunk > fsBytes)
                         {
-                            chunk = fsBytes - bytesRead;
+                            chunk = (int)(fsBytes - bytesRead);
                         }
 
                         b = new byte[chunk];

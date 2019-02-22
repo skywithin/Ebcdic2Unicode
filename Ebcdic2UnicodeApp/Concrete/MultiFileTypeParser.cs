@@ -29,8 +29,8 @@ namespace Ebcdic2UnicodeApp.Concrete
             {
                 ParsedLine p;
                 MultiFileTypeMeta meta;
-                int fsBytes = (int)reader.Length;
-                int bytesRead = 0;
+                long fsBytes = (long)reader.Length;
+                long bytesRead = 0;
                 byte[] bHeader = new byte[parentLayout.LineSize];
                 byte[] child;
                 int recordLength;
@@ -44,7 +44,7 @@ namespace Ebcdic2UnicodeApp.Concrete
 
                     recordType = p.ParsedFields.Where(f => f.Key == "RecordType").Select(f => f.Value.Text).First();
                     
-                    meta = MetaData.Where(md => md.DefinitionName == recordType).First();
+                    meta = MetaData.Where(md => md.DefinitionTemplate.LayoutName == recordType).First();
 
                     if (meta.DefinitionTemplate.VariableWidth)
                     {
@@ -56,6 +56,8 @@ namespace Ebcdic2UnicodeApp.Concrete
                     {
                         child = new byte[meta.DefinitionTemplate.LineSize];
                     }
+
+                    bytesRead += reader.Read(child, 0, meta.DefinitionTemplate.LineSize);
 
                     if (meta.DefinitionTemplate.Import == true)
                     {
@@ -69,9 +71,8 @@ namespace Ebcdic2UnicodeApp.Concrete
                             }
                         }
                     }
-                    bytesRead += reader.Read(child, 0, meta.DefinitionTemplate.LineSize);
                 }
-                MetaData.ForEach(m => m.Parser.SaveParsedLinesAsTxtFile($"{fileName}_{m.DefinitionName}.txt", "|", true, true, "¬", m.AppendToFile));
+                MetaData.ForEach(m => m.Parser.SaveParsedLinesAsTxtFile($"{fileName}_{m.DefinitionTemplate.LayoutName}.txt", "|", true, true, "¬", m.AppendToFile));
             }
         }
     }
