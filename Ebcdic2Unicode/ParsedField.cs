@@ -74,7 +74,8 @@ namespace Ebcdic2Unicode
             }
             if (lineBytes.Length < (fieldTemplate.StartPosition + fieldTemplate.FieldSize))
             {
-                throw new Exception(String.Format(Messages.FieldOutsideLineBoundary, fieldTemplate.FieldName));
+                Array.Resize<byte>(ref lineBytes, fieldTemplate.StartPosition + fieldTemplate.FieldSize);
+                //throw new Exception(String.Format(Messages.FieldOutsideLineBoundary, fieldTemplate.FieldName));
             }
 
             byte[] fieldBytes = new byte[fieldTemplate.FieldSize];

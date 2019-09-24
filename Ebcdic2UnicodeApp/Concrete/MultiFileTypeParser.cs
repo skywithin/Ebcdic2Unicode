@@ -39,11 +39,11 @@ namespace Ebcdic2UnicodeApp.Concrete
                 while (bytesRead < fsBytes)
                 {
                     reader.Read(bHeader, 0,parentLayout.LineSize);
-                    reader.Position = reader.Position - parentLayout.LineSize;
+                    reader.Position =- parentLayout.LineSize;
                     p = parentParser.ParseSingleLine(parentLayout, bHeader);
 
                     recordType = p.ParsedFields.Where(f => f.Key == "RecordType").Select(f => f.Value.Text).First();
-                    
+
                     meta = MetaData.Where(md => md.DefinitionTemplate.LayoutName == recordType).First();
 
                     if (meta.DefinitionTemplate.VariableWidth)
