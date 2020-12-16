@@ -1,6 +1,6 @@
 ﻿using Ebcdic2Unicode.Constants;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,8 +9,7 @@ namespace Ebcdic2Unicode
 {
     public class EbcdicParser
     {
-        public ParsedLine[] ParsedLines { get; private set; }
-
+        public ParsedLine[] ParsedLines { get; protected set; }
 
         #region Constructors
 
@@ -114,6 +113,32 @@ namespace Ebcdic2Unicode
             return parsedLine;
         }
 
+        public ParsedLine ParseAndAddSingleLine(LineTemplate lineTemplate, byte[] lineBytes, int flushThreshhold)
+        {
+            bool isSingleLine = true;
+            this.ValidateInputParameters(lineTemplate, lineBytes, isSingleLine);
+            ParsedLine parsedLine = new ParsedLine(lineTemplate, lineBytes);
+            ParsedLine[] parsed = this.ParsedLines;
+            if (parsed == null)
+            {
+                parsed = new ParsedLine[1];
+            }
+            else
+            {
+                if (parsed.Length == flushThreshhold)
+                {
+                    Array.Resize(ref parsed, 1);
+                }
+                else
+                {
+                    Array.Resize(ref parsed, (parsed == null ? 0 : parsed.Length) + 1);
+                }
+            }
+            parsed[parsed.Length -1] = parsedLine;
+            this.ParsedLines = parsed;
+            return parsedLine;
+        }
+
         private bool ValidateInputParameters(LineTemplate lineTemplate, byte[] allBytes, bool isSingleLine)
         {
             if (allBytes == null)
@@ -148,14 +173,14 @@ namespace Ebcdic2Unicode
             return true;
         }
 
-        public bool SaveParsedLinesAsCsvFile(string outputFilePath, bool includeColumnNames = true, bool addQuotes = true)
+        public bool SaveParsedLinesAsCsvFile(string outputFilePath, bool includeColumnNames = true, bool addQuotes = true, bool append = false)
         {
-            return ParserUtilities.WriteParsedLineArrayToCsv(this.ParsedLines, outputFilePath, includeColumnNames, addQuotes);
+            return ParserUtilities.WriteParsedLineArrayToCsv(this.ParsedLines, outputFilePath, includeColumnNames, addQuotes, false);
         }
 
-        public bool SaveParsedLinesAsTxtFile(string outputFilePath, string delimiter = "\t", bool includeColumnNames = true, bool addQuotes = true)
+        public bool SaveParsedLinesAsTxtFile(string outputFilePath, string delimiter = "\t", bool includeColumnNames = true, bool addQuotes = true, string quoteCharacter = "\"", bool append = false)
         {
-            return ParserUtilities.WriteParsedLineArrayToTxt(this.ParsedLines, outputFilePath, delimiter, includeColumnNames, addQuotes);
+            return ParserUtilities.WriteParsedLineArrayToTxt(this.ParsedLines, outputFilePath, delimiter, includeColumnNames, addQuotes, quoteCharacter, append);
         }
 
         public bool SaveParsedLinesAsXmlFile(string outputFilePath)

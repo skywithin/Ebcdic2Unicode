@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -248,9 +249,9 @@ namespace Ebcdic2Unicode
             return true;
         }
 
-        public static bool WriteParsedLineArrayToTxt(ParsedLine[] lines, string outputFilePath, string delimiter = "\t", bool includeColumnNames = true, bool addQuotes = true)
+        public static bool WriteParsedLineArrayToTxt(ParsedLine[] lines, string outputFilePath, string delimiter = "\t", bool includeColumnNames = true, bool addQuotes = true, string quoteCharacter = "\"", bool append = false)
         {
-            Console.WriteLine("{0}: Writing output TXT file...", DateTime.Now);
+            Console.WriteLine("{0}: Writing output to TXT file...", DateTime.Now);
 
             if (lines == null || lines.Length == 0)
             {
@@ -260,20 +261,20 @@ namespace Ebcdic2Unicode
 
             try
             {
-                if (File.Exists(outputFilePath))
+                if (File.Exists(outputFilePath) && !append)
                 {
                     File.Delete(outputFilePath);
                 }
 
-                using (TextWriter tw = new StreamWriter(outputFilePath, true))
+                using (TextWriter tw = new StreamWriter(outputFilePath, true, Encoding.Default))
                 {
-                    if (includeColumnNames && lines.Length > 0)
+                    if (includeColumnNames && lines.Length > 0 & !append)
                     {
-                        tw.WriteLine(string.Join(delimiter, lines[0].Template.GetFieldNames(addQuotes)));
+                        tw.WriteLine(string.Join(delimiter, lines[0].Template.GetFieldNames(addQuotes, quoteCharacter)));
                     }
                     foreach (ParsedLine line in lines)
                     {
-                        tw.WriteLine(string.Join(delimiter, line.GetFieldValues(addQuotes)));
+                        tw.WriteLine(string.Join(delimiter, line.GetFieldValues(addQuotes, quoteCharacter)));
                     }
                 }
             }
@@ -283,13 +284,13 @@ namespace Ebcdic2Unicode
                 return false;
             }
 
-            Console.WriteLine("{1}: Output file created {0}", Path.GetFileName(outputFilePath), DateTime.Now);
+            Console.WriteLine($"{DateTime.Now}: Output file {(append ? "written to" : "created")} {Path.GetFileName(outputFilePath)}");
             return true;
         }
 
-        public static bool WriteParsedLineArrayToCsv(ParsedLine[] lines, string outputFilePath, bool includeColumnNames = true, bool addQuotes = true)
+        public static bool WriteParsedLineArrayToCsv(ParsedLine[] lines, string outputFilePath, bool includeColumnNames = true, bool addQuotes = true, bool append = false)
         {
-            return WriteParsedLineArrayToTxt(lines, outputFilePath, ",", includeColumnNames, addQuotes);
+            return WriteParsedLineArrayToTxt(lines, outputFilePath, ",", includeColumnNames, addQuotes, "\"" ,append);
         }
 
         public static string RemoveNonAsciiChars(string text)

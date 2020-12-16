@@ -14,7 +14,7 @@ namespace Ebcdic2Unicode
 
         public string LineTemplateName { get; private set; }
 
-        public int LineSize { get; private set; }
+        public int LineSize { get; protected set; }
 
         public int FieldsCount
         {
@@ -23,8 +23,6 @@ namespace Ebcdic2Unicode
                 return FieldTemplates.Count;
             }
         }
-
-
 
         //Constructor 1
         public LineTemplate(int lineSize, string templateName = "")
@@ -90,10 +88,22 @@ namespace Ebcdic2Unicode
             this.FieldTemplates.Add(fieldTemplate.FieldName, fieldTemplate);
         }
 
-        public string[] GetFieldNames(bool addQuotes)
+        public void AddFieldTemplates(List<FieldTemplate> fieldTemplates)
+        {
+            fieldTemplates.ForEach(t =>
+            {
+                if ((t.StartPosition + t.FieldSize) > this.LineSize)
+                {
+                    throw new Exception(String.Format(Messages.FieldExceedsLineBoundary, t.FieldName));
+                }
+                this.FieldTemplates.Add(t.FieldName, t);
+            });
+        }
+
+        public string[] GetFieldNames(bool addQuotes, string quoteCharacter)
         {
             var query = (from f in FieldTemplates.Values
-                         select String.Format("{1}{0}{1}", f.FieldName, addQuotes ? "\"" : "")).ToArray();
+                         select String.Format("{1}{0}{1}", f.FieldName, addQuotes ? quoteCharacter : "")).ToArray();
 
             return query;
         }

@@ -74,7 +74,8 @@ namespace Ebcdic2Unicode
             }
             if (lineBytes.Length < (fieldTemplate.StartPosition + fieldTemplate.FieldSize))
             {
-                throw new Exception(String.Format(Messages.FieldOutsideLineBoundary, fieldTemplate.FieldName));
+                Array.Resize<byte>(ref lineBytes, fieldTemplate.StartPosition + fieldTemplate.FieldSize);
+                //throw new Exception(String.Format(Messages.FieldOutsideLineBoundary, fieldTemplate.FieldName));
             }
 
             byte[] fieldBytes = new byte[fieldTemplate.FieldSize];
@@ -432,7 +433,7 @@ namespace Ebcdic2Unicode
             double result = numericValue / Math.Pow(10, decimalPlaces);
             return result.ToString();
         }
-
+        
         private string Unpack(byte[] packedBytes, int decimalPlaces, out bool isParsedSuccessfully)
         {
             // There is a trick to see the value of the packed number in HEX (Base16). 
@@ -521,7 +522,7 @@ namespace Ebcdic2Unicode
             int b = packedBytes[packedBytes.Length - 1 - nibbleNo / 2];
             return (nibbleNo % 2 == 0) ? (b & 0x0000000F) : (b >> 4);
         }
-
+        
         public XElement ToXml(bool includeSrcBytesInHex = false)
         {
             XElement element = new XElement(Fields.XmlFields);
